@@ -16,11 +16,6 @@ public class CustomPermissionAttachment extends PermissionAttachment {
     private static final Field PERMISSIBLE_FIELD =
             BasicReflection.fetchField(PermissionAttachment.class, "permissible");
 
-    static {
-        CustomPermissionAttachment.PERMISSIONS_FIELD.setAccessible(true);
-        CustomPermissionAttachment.PERMISSIONS_FIELD.setAccessible(true);
-    }
-
 
     public CustomPermissionAttachment(Plugin plugin, Permissible Permissible) {
         super(plugin, Permissible);

@@ -24,12 +24,6 @@ public class PermissibleUtil {
     private static final Field PARENT =
             BasicReflection.fetchField(PermissibleBase.class, "parent");
 
-    static {
-        PermissibleUtil.PERMISSIBLE_BASE.setAccessible(true);
-        PermissibleUtil.ATTACHMENTS.setAccessible(true);
-        PermissibleUtil.PARENT.setAccessible(true);
-    }
-
     @SuppressWarnings("unchecked")
     public static void applyPermissionAttachment(Player player, CustomPermissionAttachment attachment) {
         PermissibleBase permissibleBase =
