@@ -1,0 +1,15 @@
+build.xml
+target/
+dependency-reduced-pom.xml
+.*.sw[a-p]
+build/
+bin/
+dist/
+manifest.mf
+.DS_Store/
+*.iml
+*.ipr
+*.iws
+.idea/
+*~
+*.properties
