@@ -40,13 +40,16 @@ public class CustomPermissionAttachment extends PermissionAttachment {
     }
 
     public void recalculatePermissions() {
-        ((Permissible) BasicReflection.invokeField(CustomPermissionAttachment.PERMISSIBLE_FIELD, this))
-                .recalculatePermissions();
+        ((Permissible) BasicReflection.invokeField(PERMISSIBLE_FIELD, this)).recalculatePermissions();
     }
 
     @Override
     public void setPermission(String name, boolean value) {
         this.addPermission(name, value);
+    }
+
+    public void setPermissions(List<String> permissions, boolean value) {
+        permissions.forEach(permission -> this.addPermission(permission, value));
     }
 
     @Override
@@ -56,22 +59,22 @@ public class CustomPermissionAttachment extends PermissionAttachment {
 
     @SuppressWarnings("unchecked")
     public void addPermission(String permission, boolean value) {
-        ((Map<String, Boolean>) BasicReflection.invokeField(CustomPermissionAttachment.PERMISSIONS_FIELD, this))
+        ((Map<String, Boolean>) BasicReflection.invokeField(PERMISSIONS_FIELD, this))
                 .put(permission.toLowerCase(), value);
     }
 
     @SuppressWarnings("unchecked")
     public void removePermission(String permission) {
-        ((Map<String, Boolean>) BasicReflection.invokeField(CustomPermissionAttachment.PERMISSIONS_FIELD, this))
+        ((Map<String, Boolean>) BasicReflection.invokeField(PERMISSIONS_FIELD, this))
                 .remove(permission.toLowerCase());
     }
 
     @SuppressWarnings("unchecked")
     public void applyAttachment() {
         PermissibleBase permissibleBase =
-                (PermissibleBase) BasicReflection.invokeField(CustomPermissionAttachment.PERMISSIBLE_BASE, this.player);
+                (PermissibleBase) BasicReflection.invokeField(PERMISSIBLE_BASE, this.player);
         List<PermissionAttachment> attachments = (List<PermissionAttachment>)
-                BasicReflection.invokeField(CustomPermissionAttachment.ATTACHMENTS, permissibleBase);
+                BasicReflection.invokeField(ATTACHMENTS, permissibleBase);
 
         if (!attachments.contains(this))
             attachments.add(this);
@@ -81,7 +84,7 @@ public class CustomPermissionAttachment extends PermissionAttachment {
 
     public static Permissible getPermissible(Player player) {
         PermissibleBase permissibleBase =
-                (PermissibleBase) BasicReflection.invokeField(CustomPermissionAttachment.PERMISSIBLE_BASE, player);
-        return (Permissible) BasicReflection.invokeField(CustomPermissionAttachment.PARENT, permissibleBase);
+                (PermissibleBase) BasicReflection.invokeField(PERMISSIBLE_BASE, player);
+        return (Permissible) BasicReflection.invokeField(PARENT, permissibleBase);
     }
 }
