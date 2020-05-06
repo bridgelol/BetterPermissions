@@ -37,7 +37,8 @@ public class PermissibleUtil {
         List<PermissionAttachment> attachments = (List<PermissionAttachment>)
                 BasicReflection.invokeField(PermissibleUtil.ATTACHMENTS, permissibleBase);
 
-        attachments.add(attachment);
+        if (!attachments.contains(attachment))
+            attachments.add(attachment);
         attachment.recalculatePermissions();
     }
 
