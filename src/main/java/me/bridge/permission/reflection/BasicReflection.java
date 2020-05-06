@@ -17,9 +17,6 @@ public class BasicReflection {
      * @return invoked field
      */
     public static Object invokeField(Field field, Object object) {
-        if (!field.isAccessible())
-            field.setAccessible(true);
-
         try {
             return field.get(object);
         } catch (IllegalAccessException e) {
@@ -36,7 +33,11 @@ public class BasicReflection {
      */
     public static Field fetchField(Class<?> clazz, String fieldName) {
         try {
-            return clazz.getDeclaredField(fieldName);
+            Field field = clazz.getDeclaredField(fieldName);
+
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
         } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException(e);
         }
