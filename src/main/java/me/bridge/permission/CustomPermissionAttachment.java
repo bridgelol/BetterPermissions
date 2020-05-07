@@ -14,16 +14,20 @@ import java.util.Map;
 
 public class CustomPermissionAttachment extends PermissionAttachment {
 
+    /* Package Data */
+    private static final String CRAFT_SERVER_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    private static final String CRAFT_SERVER_VERSION = CRAFT_SERVER_NAME
+            .substring(CRAFT_SERVER_NAME.lastIndexOf('.') + 1);
+
+    /* Classes */
+    private static final Class<?> CRAFT_HUMAN_ENTITY =
+            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_SERVER_VERSION + ".entity");
+
+    /* Fields */
     private static final Field PERMISSIONS_FIELD =
             BasicReflection.fetchField(PermissionAttachment.class, "permissions");
     private static final Field PERMISSIBLE_FIELD =
             BasicReflection.fetchField(PermissionAttachment.class, "permissible");
-
-    private static final String CRAFT_SERVER_NAME = Bukkit.getServer().getClass().getPackage().getName();
-    private static final String CRAFT_SERVER_VERSION = CRAFT_SERVER_NAME
-            .substring(CRAFT_SERVER_NAME.lastIndexOf('.') + 1);
-    private static final Class<?> CRAFT_HUMAN_ENTITY =
-            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_SERVER_VERSION + ".entity");
     private static final Field PERMISSIBLE_BASE =
             BasicReflection.fetchField(CRAFT_HUMAN_ENTITY, "perm");
     private static final Field ATTACHMENTS =
