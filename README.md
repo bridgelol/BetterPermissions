@@ -6,7 +6,7 @@ BetterPermissions changes the fact that bukkit "recalculates" permissions everyt
 causing major performance issues. This can provide an overall way better experience updating player's permissions.
 
 ## Example Usage
-```
+```java
 public class ExamplePlugin extends JavaPlugin {
 
     @Override
