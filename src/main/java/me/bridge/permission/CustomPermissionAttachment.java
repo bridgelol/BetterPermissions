@@ -1,6 +1,6 @@
 package me.bridge.permission;
 
-import me.bridge.permission.reflection.BasicReflection;
+import me.bridge.permission.util.BasicReflection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;

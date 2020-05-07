@@ -1,4 +1,4 @@
-package me.bridge.permission.reflection;
+package me.bridge.permission.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -31,6 +31,7 @@ public class BasicReflection {
      * @exception IllegalArgumentException in case the field is not found
      * @return Optional field
      */
+    @SuppressWarnings("deprecation")
     public static Field fetchField(Class<?> clazz, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -38,6 +39,7 @@ public class BasicReflection {
             if (!field.isAccessible())
                 field.setAccessible(true);
 
+            return field;
         } catch (NoSuchFieldException e) {
             throw new IllegalArgumentException(e);
         }
