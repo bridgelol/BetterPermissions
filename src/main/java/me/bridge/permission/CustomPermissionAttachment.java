@@ -21,7 +21,7 @@ public class CustomPermissionAttachment extends PermissionAttachment {
 
     /* Classes */
     private static final Class<?> CRAFT_HUMAN_ENTITY =
-            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_SERVER_VERSION + ".entity");
+            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_SERVER_VERSION + ".entity.CraftHumanEntity");
 
     /* Fields */
     private static final Field PERMISSIONS_FIELD =
