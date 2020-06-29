@@ -1,4 +1,4 @@
-package me.bridge.permission.util;
+package gg.medusa.library.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -31,7 +31,6 @@ public class BasicReflection {
      * @exception IllegalArgumentException in case the field is not found
      * @return Optional field
      */
-    @SuppressWarnings("deprecation")
     public static Field fetchField(Class<?> clazz, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -41,6 +40,14 @@ public class BasicReflection {
 
             return field;
         } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static void updateField(Field field, Object object, Object newValue) {
+        try {
+            field.set(object, newValue);
+        } catch (IllegalAccessException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -84,7 +91,9 @@ public class BasicReflection {
      */
     public static Method fetchMethod(Class<?> clazz, String methodName, Class<?>... parameters) {
         try {
-            return clazz.getDeclaredMethod(methodName, parameters);
+            Method method = clazz.getDeclaredMethod(methodName, parameters);
+            method.setAccessible(true);
+            return method;
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(e);
         }
@@ -132,4 +141,3 @@ public class BasicReflection {
         completableFuture.whenCompleteAsync(callback);
     }
 }
-

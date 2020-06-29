@@ -37,11 +37,13 @@ public class CustomPermissionAttachment extends PermissionAttachment {
 
     private final Player player;
 
+
     public CustomPermissionAttachment(Plugin plugin, Player player) {
-        super(plugin, CustomPermissionAttachment.getPermissible(player));
+        super(plugin, getPermissible(player));
 
         this.player = player;
     }
+
 
     public void recalculatePermissions() {
         ((Permissible) BasicReflection.invokeField(PERMISSIBLE_FIELD, this)).recalculatePermissions();
