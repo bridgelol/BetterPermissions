@@ -1,4 +1,4 @@
-package gg.medusa.library.util;
+package me.bridge.permission.util;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
