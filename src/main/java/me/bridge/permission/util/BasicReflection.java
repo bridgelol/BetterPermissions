@@ -1,9 +1,8 @@
 package me.bridge.permission.util;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -31,6 +30,7 @@ public class BasicReflection {
      * @exception IllegalArgumentException in case the field is not found
      * @return Optional field
      */
+    @SuppressWarnings("deprecation")
     public static Field fetchField(Class<?> clazz, String fieldName) {
         try {
             Field field = clazz.getDeclaredField(fieldName);
@@ -40,6 +40,40 @@ public class BasicReflection {
 
             return field;
         } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Field fetchFieldPrivileged(Class<?> clazz, String fieldName) {
+        try {
+            Field field = clazz.getDeclaredField(fieldName);
+
+            AccessController.doPrivileged((PrivilegedAction<Object>) () -> {
+                if (!field.isAccessible())
+                    field.setAccessible(true);
+                return null;
+            });
+
+            return field;
+        } catch (NoSuchFieldException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    private static final Field MODIFIERS_FIELD = fetchFieldPrivileged(Field.class, "modifiers");
+
+    @SuppressWarnings("deprecation")
+    public static void updateFinalField(Field field, Object object, Object newValue) {
+        try {
+            if (!field.isAccessible())
+                field.setAccessible(true);
+
+            int oldModifiers = field.getModifiers();
+            MODIFIERS_FIELD.setInt(field, oldModifiers & ~Modifier.FINAL);
+            field.set(object, newValue);
+            MODIFIERS_FIELD.setInt(field, oldModifiers);
+        } catch (IllegalAccessException e){
             throw new IllegalArgumentException(e);
         }
     }

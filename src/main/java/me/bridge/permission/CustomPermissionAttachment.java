@@ -6,30 +6,37 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CustomPermissionAttachment extends PermissionAttachment {
 
     /* Package Data */
-    private static final String CRAFT_SERVER_NAME = Bukkit.getServer().getClass().getPackage().getName();
-    private static final String CRAFT_SERVER_VERSION = CRAFT_SERVER_NAME
-            .substring(CRAFT_SERVER_NAME.lastIndexOf('.') + 1);
+    private static final String CRAFT_NAME = Bukkit.getServer().getClass().getPackage().getName();
+    private static final String CRAFT_VERSION = CRAFT_NAME
+            .substring(CRAFT_NAME.lastIndexOf('.') + 1);
 
     /* Classes */
     private static final Class<?> CRAFT_HUMAN_ENTITY =
-            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_SERVER_VERSION + ".entity.CraftHumanEntity");
-
-    /* Fields */
+            BasicReflection.getClass("org.bukkit.craftbukkit." + CRAFT_VERSION + ".entity.CraftHumanEntity");
+    // CraftHumanEntity fields
+    private static final Field PERMISSIBLE_BASE =
+            BasicReflection.fetchField(CRAFT_HUMAN_ENTITY, "perm");
+    // PermissionAttachment fields
     private static final Field PERMISSIONS_FIELD =
             BasicReflection.fetchField(PermissionAttachment.class, "permissions");
     private static final Field PERMISSIBLE_FIELD =
             BasicReflection.fetchField(PermissionAttachment.class, "permissible");
-    private static final Field PERMISSIBLE_BASE =
-            BasicReflection.fetchField(CRAFT_HUMAN_ENTITY, "perm");
+    // PermissibleBase fields
+    private static final Field PERMISSIONS_PERMISSIBLE_BASE =
+            BasicReflection.fetchField(PermissibleBase.class, "permissions");
     private static final Field ATTACHMENTS =
             BasicReflection.fetchField(PermissibleBase.class, "attachments");
     private static final Field PARENT =
@@ -44,9 +51,31 @@ public class CustomPermissionAttachment extends PermissionAttachment {
         this.player = player;
     }
 
+    public static Permissible getPermissible(Player player) {
+        PermissibleBase permissibleBase =
+                (PermissibleBase) BasicReflection.invokeField(PERMISSIBLE_BASE, player);
+        return (Permissible) BasicReflection.invokeField(PARENT, permissibleBase);
+    }
 
     public void recalculatePermissions() {
         ((Permissible) BasicReflection.invokeField(PERMISSIBLE_FIELD, this)).recalculatePermissions();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void ensureThreadSafety() {
+        PermissibleBase permissibleBase =
+                (PermissibleBase) BasicReflection.invokeField(PERMISSIBLE_BASE, this.player);
+
+        // Make attachments field a synchronized list
+        BasicReflection.updateFinalField(ATTACHMENTS, permissibleBase, Collections.synchronizedList(new ArrayList<>(
+                (List<PermissionAttachment>) BasicReflection.invokeField(ATTACHMENTS, permissibleBase))
+        ));
+
+        // Make permissions field a ConcurrentHashMap
+        BasicReflection.updateFinalField(PERMISSIONS_PERMISSIBLE_BASE, permissibleBase,
+                new ConcurrentHashMap<>((Map<String, PermissionAttachmentInfo>)
+                        BasicReflection.invokeField(PERMISSIONS_PERMISSIBLE_BASE, permissibleBase)
+        ));
     }
 
     @Override
@@ -86,11 +115,5 @@ public class CustomPermissionAttachment extends PermissionAttachment {
             attachments.add(this);
 
         recalculatePermissions();
-    }
-
-    public static Permissible getPermissible(Player player) {
-        PermissibleBase permissibleBase =
-                (PermissibleBase) BasicReflection.invokeField(PERMISSIBLE_BASE, player);
-        return (Permissible) BasicReflection.invokeField(PARENT, permissibleBase);
     }
 }
